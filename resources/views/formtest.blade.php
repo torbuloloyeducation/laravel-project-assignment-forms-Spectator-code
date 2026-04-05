@@ -1,29 +1,62 @@
-<x-layout>
-    <form method="POST" action="/formtest">
-        @csrf
-<div class="space-y-12">
-    <div class="border-b border-white/10">
-      <div class="mt-2 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-12 p-10 bg-gray-800 rounded-lg">
-        <div class="sm:col-span-4">
-          <label for="email" class="block text-sm/6 font-medium text-white">Email</label>
-          <div class="mt-2">
-            <div class="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
-              <input id="email" type="email" name="email" placeholder="juandelacruz@umindanao.edu.ph" class="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6" />
+<x-layout title="Form Test">
+    <div class="mx-auto max-w-2xl p-8 text-white">
+        @if(session('success'))
+            <div class="mb-4 rounded-lg bg-green-600/20 border border-green-500 p-4 text-green-100">
+                {{ session('success') }}
             </div>
-            <div class="mt-3 flex items-center gap-x-6 justify-end">
-            <button type="submit" class="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">Save</button>
+        @endif
+
+        @if(session('warning'))
+            <div class="mb-4 rounded-lg bg-yellow-600/20 border border-yellow-500 p-4 text-yellow-100">
+                {{ session('warning') }}
             </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-4 rounded-lg bg-red-600/20 border border-red-500 p-4 text-red-100">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="mb-4 rounded-lg bg-red-600/20 border border-red-500 p-4 text-red-100">
+                <ul class="list-disc pl-5">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form method="POST" action="/formtest" class="space-y-6 rounded-lg bg-slate-900/80 p-6 shadow-lg">
+            @csrf
+            <div>
+                <label for="email" class="block text-sm font-medium text-white">Email</label>
+                <div class="mt-2">
+                    <input id="email" name="email" type="email" value="{{ old('email') }}" placeholder="juan@example.com" class="block w-full rounded-md border border-white/10 bg-slate-950/50 px-3 py-2 text-white outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30" />
+                </div>
+            </div>
+            <button type="submit" class="rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-400">Save</button>
         </form>
-          </div>
-          <div class="mt-3 p-5">
-            <h2 class="text-lg font-semibold text-white">Emails</h2>
-        <ul>
-            @foreach ($emails as $email)
-                <li class="text-sm p-1">{{ $email }}</li>
-            @endforeach
-          </div>
+
+        <div class="mt-8 rounded-lg bg-slate-900/80 p-6 shadow-lg">
+            <h2 class="text-xl font-semibold text-white">Emails</h2>
+            @if(count($emails) > 0)
+                <ul class="mt-4 space-y-3">
+                    @foreach($emails as $index => $email)
+                        <li class="flex items-center justify-between rounded-md border border-white/10 bg-slate-950/60 px-4 py-3">
+                            <span>{{ $email }}</span>
+                            <form method="POST" action="/formtest/delete">
+                                @csrf
+                                <input type="hidden" name="index" value="{{ $index }}">
+                                <button type="submit" class="rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-red-500">Delete</button>
+                            </form>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <p class="mt-4 text-sm text-gray-300">No emails saved yet.</p>
+            @endif
         </div>
-      </div>
     </div>
-  </div>
 </x-layout>
